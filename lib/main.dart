@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'home_page.dart';
+import 'second_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,84 +14,123 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Digital Art Equipment',
       theme: ThemeData(
-        // Seed color ganti ke warna khas Wacom (toska)
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF00C4B3)),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Digital Art Equipment'),
+      home: const MainPage(),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key, required this.title});
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
 
-  final String title;
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  // untuk ganti konten
+  Widget _currentPage = const HomePage();
+  String _title = 'Home';
+
+  void _selectPage(Widget page, String title) {
+    setState(() {
+      _currentPage = page;
+      _title = title;
+    });
+    Navigator.pop(context); // tutup drawer setelah pilih menu
+  }
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> items = [
-      {"title": "Drawing Tablet", "icon": Icons.tablet},
-      {"title": "Stylus Pen", "icon": Icons.edit},
-      {"title": "Digital Canvas", "icon": Icons.brush},
-      {"title": "Graphic Monitor", "icon": Icons.monitor},
-      {"title": "Pressure Pen", "icon": Icons.gesture},
-      {"title": "Pen Display", "icon": Icons.touch_app},
-      {"title": "Digital Ruler", "icon": Icons.straighten},
-      {"title": "Color Calibration", "icon": Icons.color_lens},
-      {"title": "Software Drawing", "icon": Icons.apps},
-      {"title": "Shortcut Keypad", "icon": Icons.keyboard},
-    ];
+    const wacomColor = Color(0xFF00C4B3);
 
     return Scaffold(
       appBar: AppBar(
-        // Warna header → warna khas Wacom
-        backgroundColor: const Color(0xFF00C4B3),
+        backgroundColor: wacomColor,
         title: Text(
-          title,
-          style: const TextStyle(
-            color: Colors.white, // tulisan header putih biar kontras
-            fontWeight: FontWeight.bold,
+          _title,
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        // tombol bulat di kanan header
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(24),
+              onTap: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Tombol bulat ditekan')),
+                );
+              },
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.settings, color: wacomColor),
+              ),
+            ),
           ),
+        ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: wacomColor),
+              child: Text(
+                'Menu Navigasi',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.home, color: wacomColor),
+              title: const Text('Home'),
+              onTap: () => _selectPage(const HomePage(), 'Home'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.info, color: wacomColor),
+              title: const Text('About'),
+              onTap: () => _selectPage(const AboutPage(), 'About'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.contact_mail, color: wacomColor),
+              title: const Text('Contact'),
+              onTap: () => _selectPage(const ContactPage(), 'Contact'),
+            ),
+          ],
         ),
       ),
-      body: GridView.builder(
-        padding: const EdgeInsets.all(10),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2, // 2 kolom
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-          childAspectRatio: 1.2,
-        ),
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          final item = items[index];
-          return Card(
-            elevation: 3,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Icon pakai warna khas Wacom
-                Icon(
-                  item['icon'],
-                  size: 48,
-                  color: const Color(0xFF00C4B3),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  item['title'],
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
+      body: _currentPage,
     );
   }
 }
 
+/// Halaman About
+class AboutPage extends StatelessWidget {
+  const AboutPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text('Ini halaman About', style: TextStyle(fontSize: 18)),
+    );
+  }
+}
+
+/// Halaman Contact
+class ContactPage extends StatelessWidget {
+  const ContactPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text('Ini halaman Contact', style: TextStyle(fontSize: 18)),
+    );
+  }
+}
