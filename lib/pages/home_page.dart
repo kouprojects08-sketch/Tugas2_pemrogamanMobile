@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'second_page.dart';
+import '../pages/second_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -9,20 +9,20 @@ class HomePage extends StatelessWidget {
     final List<Map<String, dynamic>> items = [
       {"title": "Drawing Tablet", "icon": Icons.tablet},
       {"title": "Stylus Pen", "icon": Icons.edit},
-      {"title": "Digital Canvas", "icon": Icons.brush},
-      {"title": "Graphic Monitor", "icon": Icons.monitor},
-      {"title": "Pressure Pen", "icon": Icons.gesture},
-      {"title": "Pen Display", "icon": Icons.touch_app},
-      {"title": "Digital Ruler", "icon": Icons.straighten},
-      {"title": "Color Calibration", "icon": Icons.color_lens},
-      {"title": "Software Drawing", "icon": Icons.apps},
-      {"title": "Shortcut Keypad", "icon": Icons.keyboard},
+      {"title": "Monitor", "icon": Icons.monitor},
+      {"title": "Software License", "icon": Icons.apps},
+      {"title": "Graphic Tablet Stand", "icon": Icons.computer},
+      {"title": "Tablet Cover", "icon": Icons.tablet_mac},
+      {"title": "USB-C Hub", "icon": Icons.usb},
+      {"title": "Laptop / PC", "icon": Icons.laptop},
+      {"title": "External Hard Drive", "icon": Icons.storage},
+      {"title": "Digital Art Gloves", "icon": Icons.pan_tool},
     ];
 
     return GridView.builder(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
+        crossAxisCount: 10, // jumlah kolom
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
         childAspectRatio: 1.2,

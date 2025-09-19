@@ -1,27 +1,49 @@
 import 'package:flutter/material.dart';
-import 'home_page.dart';
-import 'second_page.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
+/// Provider Counter
+class CounterProvider with ChangeNotifier {
+  int _counter = 0;
+
+  int get counter => _counter;
+
+  void increment() {
+    _counter++;
+    notifyListeners();
+  }
+
+  void decrement() {
+    _counter--;
+    notifyListeners();
+  }
+}
+
+/// Root MyApp
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Digital Art Equipment',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF00C4B3)),
-        useMaterial3: true,
+    return ChangeNotifierProvider(
+      create: (_) => CounterProvider(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Digital Art Equipment',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF00C4B3)),
+          useMaterial3: true,
+        ),
+        home: const MainPage(),
       ),
-      home: const MainPage(),
     );
   }
 }
 
+/// Main Page dengan Drawer Navigation
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
@@ -30,8 +52,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  // untuk ganti konten
-  Widget _currentPage = const HomePage();
+  Widget _currentPage = HomePage(); // jangan const
   String _title = 'Home';
 
   void _selectPage(Widget page, String title) {
@@ -39,7 +60,7 @@ class _MainPageState extends State<MainPage> {
       _currentPage = page;
       _title = title;
     });
-    Navigator.pop(context); // tutup drawer setelah pilih menu
+    Navigator.pop(context);
   }
 
   @override
@@ -53,29 +74,7 @@ class _MainPageState extends State<MainPage> {
           _title,
           style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        // tombol bulat di kanan header
-        actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(24),
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Tombol bulat ditekan')),
-                );
-              },
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.settings, color: wacomColor),
-              ),
-            ),
-          ),
-        ],
+        centerTitle: true,
       ),
       drawer: Drawer(
         child: ListView(
@@ -91,7 +90,12 @@ class _MainPageState extends State<MainPage> {
             ListTile(
               leading: const Icon(Icons.home, color: wacomColor),
               title: const Text('Home'),
-              onTap: () => _selectPage(const HomePage(), 'Home'),
+              onTap: () => _selectPage(HomePage(), 'Home'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.calculate, color: wacomColor),
+              title: const Text('Counter'),
+              onTap: () => _selectPage(CounterPage(), 'Counter'),
             ),
             ListTile(
               leading: const Icon(Icons.info, color: wacomColor),
@@ -111,6 +115,63 @@ class _MainPageState extends State<MainPage> {
   }
 }
 
+/// Halaman Home
+class HomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(
+      crossAxisCount: 2,
+      padding: const EdgeInsets.all(16),
+      children: const [
+        Card(
+          child: Center(child: Text("Drawing Tablet")),
+        ),
+        Card(
+          child: Center(child: Text("Stylus Pen")),
+        ),
+        Card(
+          child: Center(child: Text("Monitor")),
+        ),
+        Card(
+          child: Center(child: Text("Software License")),
+        ),
+      ],
+    );
+  }
+}
+
+/// Halaman Counter
+class CounterPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final counter = context.watch<CounterProvider>();
+
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("Counter: ${counter.counter}", style: const TextStyle(fontSize: 20)),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: counter.increment,
+                child: const Text("Tambah"),
+              ),
+              const SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: counter.decrement,
+                child: const Text("Kurang"),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+}
+
 /// Halaman About
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
@@ -118,7 +179,16 @@ class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Text('Ini halaman About', style: TextStyle(fontSize: 18)),
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Text(
+          'Aplikasi ini dibuat untuk menampilkan daftar alat digital art,\n'
+          'dilengkapi dengan fitur counter sederhana,\n'
+          'serta informasi About & Contact.',
+          style: TextStyle(fontSize: 16),
+          textAlign: TextAlign.center,
+        ),
+      ),
     );
   }
 }
@@ -130,7 +200,18 @@ class ContactPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Text('Ini halaman Contact', style: TextStyle(fontSize: 18)),
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("Hubungi Kami:", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            SizedBox(height: 8),
+            Text("Telp: +62 812 3456 7890"),
+            Text("Email: support@digitalart.com"),
+          ],
+        ),
+      ),
     );
   }
 }
